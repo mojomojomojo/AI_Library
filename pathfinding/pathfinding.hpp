@@ -4,7 +4,7 @@
 #include "graph.hpp"
 #include <vector>
 
-std::vector<GraphEdge>* path_djikstra( std::vector<GraphNode*>* allNodes, 
+std::vector<GraphEdge>* path_djikstra( Graph& g,
                                        GraphNode *start, GraphNode *end
                                        #ifdef USE_THREADS
                                        ,

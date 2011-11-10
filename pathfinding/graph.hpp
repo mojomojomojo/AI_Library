@@ -5,11 +5,26 @@
 
 #include <vector>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <string>
 
 #ifndef EdgeCost
 #define EdgeCost uint32_t
 #define EDGE_MAX 0xFFFFFFFF
 #define EDGE_FAR 0xFFFFFFFE
+#endif
+
+#ifdef _DEBUG
+#define DEBUG(m) std::cout << m;
+#else
+#define DEBUG(m)
+#endif
+
+#ifdef _VERBOSE_DEBUG
+#define VERBOSE_DEBUG(m) m
+#else
+#define VERBOSE_DEBUG(m)
 #endif
 
 #ifdef USE_THREADS
@@ -59,6 +74,8 @@ public:
   GraphNode *to;
   GraphNode *from;
   GraphEdge() : to(NULL), from(NULL), cost(EDGE_FAR) {}
+  GraphEdge( const GraphEdge& e)
+    : to(e.to), from(e.from), cost(e.cost) {}
   GraphEdge( GraphNode *f, GraphNode *t, EdgeCost c )
     : from(f), to(t), cost(c) {}
 };
@@ -74,6 +91,7 @@ protected:
   EdgeCost _distance;
   GraphEdge _previousEdge;
   bool _visited;
+  bool _queued;
   #ifdef USE_THREADS
   pthread_mutex_t _lock;
   #endif
@@ -85,6 +103,7 @@ public:
     : _previousEdge(NULL,NULL,EDGE_FAR) {
     INIT_NODE_LOCK();
     _visited = false;
+    _queued = false;
     _distance = EDGE_FAR;
     _id = GraphNode::next_issue_id++;
   }
@@ -128,6 +147,7 @@ public:
   inline EdgeCost checkDistance( EdgeCost d, GraphEdge edge ) {
     LOCK_NODE();
     if (d < _distance) {
+      VERBOSE_DEBUG(std::cout<<"Lower distance to ["<<std::setw(6)<<std::setfill('0')<<_id<<"] ("<<d<<") from ["<<std::setw(6)<<std::setfill('0')<<edge.from->_id<<"] (old: "<<_distance<<")"<<std::endl;)
       _distance = d;
       _previousEdge = edge;
     }
@@ -138,16 +158,24 @@ public:
   inline bool isVisited() { return _visited; }
   inline void visited( bool v = true ) { _visited = v; }
 
-  inline GraphEdge previousEdge() { return _previousEdge; }
+  inline bool isQueued() { return _queued; }
+  inline void queued( bool v = true ) { _queued = v; }
+
+  inline GraphEdge& previousEdge() { return _previousEdge; }
 
   inline int32_t& id() { return _id; }
 };
 
 
+// int32_t GraphNode::next_issue_id = 0;
+
+
 class Graph {
 public:
-  Graph();
-  std::vector<GraphNode*>& getAllNodes();
+  Graph() {};
+  std::vector<GraphNode*>& getAllNodes() { return allNodes; }
+
+  virtual std::string asText() { return std::string("[Graph]"); }
 
 protected:
   std::vector<GraphNode*> allNodes;

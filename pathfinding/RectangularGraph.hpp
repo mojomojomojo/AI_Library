@@ -1,3 +1,6 @@
+#ifndef __RECTANGULARGRAPH_HPP__
+#define __RECTANGULARGRAPH_HPP__
+
 #include "graph.hpp"
 
 #include<limits>
@@ -22,9 +25,19 @@ class RectangularGraphNode;
   
 // };
 
+#define KNOWN_EDGE(name,cname)                                    \
+  inline GraphEdge& name( RectangularGraphNode *r, EdgeCost c ) { \
+  neighbors[cname].to = r;                                        \
+  neighbors[cname].from = this;                                   \
+  neighbors[cname].cost = c;                                      \
+  return this->name();                                            \
+  }                                                               \
+  inline GraphEdge& name() { return neighbors[cname]; }
+
+
 class RectangularGraphNode : public GraphNode {
 public:
-  GraphEdge& north( RectangularGraphNode *n, EdgeCost c ) {
+  inline GraphEdge& north( RectangularGraphNode *n, EdgeCost c ) {
     neighbors[North].to = n;
     neighbors[North].from = this;
     neighbors[North].cost = c;
@@ -32,7 +45,23 @@ public:
   }
   inline GraphEdge& north() { return neighbors[North]; }
 
-  GraphEdge& east( RectangularGraphNode *n, EdgeCost c ) {
+  inline GraphEdge& northeast( RectangularGraphNode *n, EdgeCost c ) {
+    neighbors[NorthEast].to = n;
+    neighbors[NorthEast].from = this;
+    neighbors[NorthEast].cost = c;
+    return this->northeast();
+  }
+  inline GraphEdge& northeast() { return neighbors[NorthEast]; }
+
+  inline GraphEdge& northwest( RectangularGraphNode *n, EdgeCost c ) {
+    neighbors[NorthWest].to = n;
+    neighbors[NorthWest].from = this;
+    neighbors[NorthWest].cost = c;
+    return this->northwest();
+  }
+  inline GraphEdge& northwest() { return neighbors[NorthWest]; }
+
+  inline GraphEdge& east( RectangularGraphNode *n, EdgeCost c ) {
     neighbors[East].to = n;
     neighbors[East].from = this;
     neighbors[East].cost = c;
@@ -40,7 +69,7 @@ public:
   }
   inline GraphEdge& east() { return neighbors[East]; }
 
-  GraphEdge& south( RectangularGraphNode *n, EdgeCost c ) {
+  inline GraphEdge& south( RectangularGraphNode *n, EdgeCost c ) {
     neighbors[South].to = n;
     neighbors[South].from = this;
     neighbors[South].cost = c;
@@ -48,7 +77,23 @@ public:
   }
   inline GraphEdge& south() { return neighbors[South]; }
 
-  GraphEdge& west( RectangularGraphNode *n, EdgeCost c ) {
+  inline GraphEdge& southeast( RectangularGraphNode *n, EdgeCost c ) {
+    neighbors[SouthEast].to = n;
+    neighbors[SouthEast].from = this;
+    neighbors[SouthEast].cost = c;
+    return this->southeast();
+  }
+  inline GraphEdge& southeast() { return neighbors[SouthEast]; }
+
+  inline GraphEdge& southwest( RectangularGraphNode *n, EdgeCost c ) {
+    neighbors[SouthWest].to = n;
+    neighbors[SouthWest].from = this;
+    neighbors[SouthWest].cost = c;
+    return this->southwest();
+  }
+  inline GraphEdge& southwest() { return neighbors[SouthWest]; }
+
+  inline GraphEdge& west( RectangularGraphNode *n, EdgeCost c ) {
     neighbors[West].to = n;
     neighbors[West].from = this;
     neighbors[West].cost = c;
@@ -57,112 +102,41 @@ public:
   inline GraphEdge& west() { return neighbors[West]; }
 
   static const int North = 0;
-  static const int East = 1;
-  static const int South = 2;
-  static const int West = 3;
+  static const int East = 2;
+  static const int South = 4;
+  static const int West = 6;
+  static const int NorthEast = 1;
+  static const int NorthWest = 7;
+  static const int SouthEast = 3;
+  static const int SouthWest = 5;
 
-  RectangularGraphNode( int32_t x_pos, int32_t y_pos ) {
-    for (int i=0; i<4; i++) {
+  inline RectangularGraphNode( int32_t x_pos, int32_t y_pos ) {
+    for (int i=0; i<NumDirections; i++) {
       neighbors.push_back(GraphEdge(this,NULL,EDGE_FAR));
     }
     x = x_pos;
     y = y_pos;
   }
 
-  virtual void dump() {
-    std::cout << "[RectNode ID(" << std::setw(6) << std::setfill('0') << _id << ") (" 
-              << x << "," << y << ") ";
-    RectangularGraphNode *to;
-    if (north().to != NULL) {
-      to = (RectangularGraphNode*)(north().to);
-      std::cout << "N[(" << to->x << "," << to->y
-                << ") " << north().cost << "] ";
-    }
-    if (east().to != NULL) {
-      to = (RectangularGraphNode*)(east().to);
-      std::cout << "E[(" << to->x << "," << to->y
-                << ") " << east().cost << "] ";
-    }
-    if (south().to != NULL) {
-      to = (RectangularGraphNode*)(south().to);
-      std::cout << "S[(" << to->x << "," << to->y
-                << ") " << south().cost << "] ";
-    }
-    if (west().to != NULL) {
-      to = (RectangularGraphNode*)(west().to);
-      std::cout << "W[(" << to->x << "," << to->y
-                << ") " << west().cost << "] ";
-    }
-
-    std::cout << "V(" << isVisited() << ") D(" << distance() << ") Prev(";
-    GraphEdge e = _previousEdge;
-    if (e.from != NULL) {
-      std::cout << "[F(" << ((RectangularGraphNode*)(e.from))->x << ","
-                << ((RectangularGraphNode*)(e.from))->y << ") "
-                << "T(" << ((RectangularGraphNode*)(e.to))->x << ","
-                << ((RectangularGraphNode*)(e.to))->y << ") "
-                << e.cost << "]";
-    }
-    std::cout << ")";
-
-    std::cout << "]";
-  }
+  virtual void dump();
 
 
   int32_t x;
   int32_t y;
 
 protected:
-
+  static const size_t NumDirections = 8;
 };
 
 class RectangularGraph : public Graph {
 public:
-  virtual std::string asText() {
-    std::stringstream s(std::stringstream::out);
-
-    int32_t minx,maxx,miny,maxy;
-    minx = maxx = ((RectangularGraphNode*)allNodes.front())->x;
-    miny = maxy = ((RectangularGraphNode*)allNodes.front())->y;
-
-    for (std::vector<GraphNode*>::iterator i = allNodes.begin();
-         i != allNodes.end();
-         i++) {
-      RectangularGraphNode *r = (RectangularGraphNode*)*i;
-      if (r->x < minx) minx = r->x;
-      if (r->x > maxx) maxx = r->x;
-      if (r->y < miny) miny = r->y;
-      if (r->y > maxy) maxy = r->y;
-    }
-
-    char **marked = new char*[maxx-minx+1];
-    for (size_t i=0; i<(maxy-miny+1); i++) {
-      marked[i] = new char[maxy-miny+1];
-    }
-
-    for (std::vector<GraphNode*>::iterator i = allNodes.begin();
-         i != allNodes.end();
-         i++) {
-      RectangularGraphNode *r = (RectangularGraphNode*)*i;
-      char *p = &(marked[r->x][r->y]);
-      *p = '.';
-      if ((*i)->isQueued()) *p = 'o';
-      if ((*i)->isVisited()) *p = '*';
-    }
-
-    // top-to-bottom
-    for (size_t y=(maxy-miny); y>=0; y--) {
-      for (size_t x=0; x<(maxy-miny+1); x++) {
-        s << marked[x][y];
-      }
-      s << std::endl;
-
-      if (y==0) break;
-    }
-
-    return s.str();
-  }
+  virtual std::string asText();
+  virtual std::string asText( GraphNode* start,
+                              GraphNode* end,
+                              std::vector<GraphEdge>* path );
 
 protected:
   
 };
+
+#endif

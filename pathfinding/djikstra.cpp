@@ -30,7 +30,7 @@ std::vector<GraphEdge>* path_djikstra( Graph& graph,
   while (queue.size() > 0) {
     VERBOSE_DEBUG(std::cout << "Q: "; for (size_t i=0; i<queue.size(); i++) { if (i>0) std::cout << ", "; std::cout << std::setw(6) << std::setfill('0') << queue[i].to->id(); } std::cout << std::endl;);
 
-    std::cout << graph.asText() << std::endl;
+    std::cout << graph.asText(start,end,NULL) << std::endl;
 
     edge = queue[0];
     curr = edge.to;
@@ -76,7 +76,7 @@ std::vector<GraphEdge>* path_djikstra( Graph& graph,
   // If curr != end, there is no (known) path.
 
   //std::cout << "Path Found!" << std::endl;
-  // Work backwards from the end node to get the path.
+  // Work backwards from the end node to build the path.
   std::vector<GraphEdge>* path = new std::vector<GraphEdge>;
   GraphEdge *p = &edge;
   while (p->from != NULL) {

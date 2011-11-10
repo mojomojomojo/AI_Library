@@ -175,7 +175,12 @@ public:
   Graph() {};
   std::vector<GraphNode*>& getAllNodes() { return allNodes; }
 
-  virtual std::string asText() { return std::string("[Graph]"); }
+  inline virtual std::string asText() { return asText(NULL,NULL,NULL); }
+  inline virtual std::string asText( GraphNode* start,
+                                     GraphNode* end,
+                                     std::vector<GraphEdge>* path ) {
+    return std::string("[Graph]");
+  }
 
 protected:
   std::vector<GraphNode*> allNodes;

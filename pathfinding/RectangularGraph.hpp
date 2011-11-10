@@ -122,6 +122,9 @@ public:
     std::stringstream s(std::stringstream::out);
 
     int32_t minx,maxx,miny,maxy;
+    minx = maxx = ((RectangularGraphNode*)allNodes.front())->x;
+    miny = maxy = ((RectangularGraphNode*)allNodes.front())->y;
+
     for (std::vector<GraphNode*>::iterator i = allNodes.begin();
          i != allNodes.end();
          i++) {

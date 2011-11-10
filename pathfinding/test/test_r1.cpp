@@ -41,19 +41,19 @@ int main() {
         matrix[x][y]->north(matrix[x][y+1],1);
       }
 
-      int idx=0;
-      for (vector<GraphEdge>::iterator i = matrix[x][y]->getAdjacentNodes().begin();
-           i != matrix[x][y]->getAdjacentNodes().end();
-           i++) {
-        cout << "[" << matrix[x][y] << "] (" << x << "," << y << ") Edge #" << idx++ << ":" << endl
-             << "  To:   " << hex << ((*i).to) << dec << endl
-             << "  From: " << hex << ((*i).from) << dec << endl
-             << "  Cost: " << (*i).cost << endl;
-      }
+      // int idx=0;
+      // for (vector<GraphEdge>::iterator i = matrix[x][y]->getAdjacentNodes().begin();
+      //      i != matrix[x][y]->getAdjacentNodes().end();
+      //      i++) {
+      //   cout << "[" << matrix[x][y] << "] (" << x << "," << y << ") Edge #" << idx++ << ":" << endl
+      //        << "  To:   " << hex << ((*i).to) << dec << endl
+      //        << "  From: " << hex << ((*i).from) << dec << endl
+      //        << "  Cost: " << (*i).cost << endl;
+      // }
     }
   }
 
-  dumpMatrix(matrix,rows,cols);
+  //dumpMatrix(matrix,rows,cols);
 
   RectangularGraphNode
     *a = matrix[0][0],

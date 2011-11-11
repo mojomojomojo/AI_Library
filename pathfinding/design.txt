@@ -1,0 +1,47 @@
+types.hpp
+  - distance/cost
+  - max values
+
+graph.hpp
+
+rgraph.hpp
+
+
+pathfinding.hpp
+ - djikstra.cpp
+ - astar.cpp
+
+
+
+Crazy Ideas:
+   analyze opponent's strategy
+   kill opponent's client process
+   
+
+Debugging:
+  Environment variable
+    - levels
+    - per component or global
+
+  ostream output (governed by config/env)
+
+
+
+class GraphNode {
+  GraphNode();
+
+  getAdjacentNodes(); // all edges
+  begin(),end() // iterator into edges
+  connectNode( GraphNode *to, EdgeCost cost ) // connect one node to another
+  distance(), // get/set distance
+  checkDistance() // update distance/path if arg is less
+
+  visited(...) // get/set visited status
+  queued(...) // get/set queued status
+
+  previousEdge() // get/set previous edge (shortest edge to start)
+
+  id() // get the node id
+  operator<< // debugging
+};
+

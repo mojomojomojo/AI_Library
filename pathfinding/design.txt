@@ -15,8 +15,12 @@ pathfinding.hpp
 
 Crazy Ideas:
    analyze opponent's strategy
-   kill opponent's client process
-   
+
+   Go for the queen:
+     getpid(), getppid() (sys/types.h, unistd.h)
+     exec*(), system()   
+
+   Make HTTP/GET request to pass back data/get new data (new thread).
 
 Debugging:
   Environment variable

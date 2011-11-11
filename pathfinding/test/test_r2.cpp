@@ -111,31 +111,33 @@ int main( int argc, char **argv ) {
         matrix[x][y]->south(matrix[x][y-1],1);
 
         if (x-1 >= 0) {
-          matrix[x][y]->southwest(matrix[x-1][y],1.414);
+          matrix[x][y]->southwest(matrix[x-1][y-1],1.414);
         } else if (x+1 < cols) {
-          matrix[x][y]->southeast(matrix[x+1][y],1.414);
+          matrix[x][y]->southeast(matrix[x+1][y-1],1.414);
         }
       }
       if (y+1 < rows) {
         matrix[x][y]->north(matrix[x][y+1],1);
 
         if (x-1 >= 0) {
-          matrix[x][y]->northwest(matrix[x-1][y],1.414);
+          matrix[x][y]->northwest(matrix[x-1][y+1],1.414);
         } else if (x+1 < cols) {
-          matrix[x][y]->northeast(matrix[x+1][y],1.414);
+          matrix[x][y]->northeast(matrix[x+1][y+1],1.414);
         }
       }
 
-// int idx=0;
-// for (vector<GraphEdge>::iterator i = matrix[x][y]->getAdjacentNodes().begin();
-//      i != matrix[x][y]->getAdjacentNodes().end();
-//      i++) {
-//   cout << "[" << matrix[x][y] << "] (" << x << "," << y << ") Edge #" << idx++ << ":" << endl
-//        << "  To:   " << hex << ((*i).to) << dec << endl
-//        << "  From: " << hex << ((*i).from) << dec << endl
-//        << "  Cost: " << (*i).cost << endl;
-// }
-//     }
+      int idx=0;
+      for (vector<GraphEdge>::iterator i = 
+             matrix[x][y]->getAdjacentNodes().begin();
+           i != matrix[x][y]->getAdjacentNodes().end();
+           i++) {
+        cout << "[" << matrix[x][y] << "] ("
+             << x << "," << y << ") Edge #" << idx++ << ":" << endl
+             << "  To:   "; if ((*i).to) (*i).to->dump(); cout << endl;
+        cout << "  From: "; if ((*i).from) (*i).from->dump(); cout << endl;
+        cout << "  Cost: " << (*i).cost << endl;
+      }
+
     }
   }
 

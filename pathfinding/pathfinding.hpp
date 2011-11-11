@@ -12,4 +12,13 @@ std::vector<GraphEdge>* path_djikstra( Graph& g,
                                        #endif
                                        );
 
+
+
+std::vector<GraphEdge>*
+path_astar(
+    Graph& g,
+    GraphNode *start, GraphNode *end
+);
+
+
 #endif

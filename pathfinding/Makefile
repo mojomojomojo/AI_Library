@@ -16,7 +16,7 @@ all: $(BINARIES)
 clean:
 	del /q $(BINARIES)
 
-djikstra.o:CXXFLAGS+=-D_VERBOSE_DEBUG
+#djikstra.o:CXXFLAGS+=-D_VERBOSE_DEBUG
 djikstra.o: graph.hpp pathfinding.hpp djikstra.cpp
 
 RectangularGraph.o: graph.hpp RectangularGraph.hpp

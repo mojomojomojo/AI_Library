@@ -43,9 +43,9 @@ std::string RectangularGraph::asText(
     if ((*i)->isVisited()) *p = '*';
   }
   if (rstart) marked[rstart->x][rstart->y] = '@';
-  if (path && !path) {
+  if (path) {
     // Start at the second node. The first one has been marked (@) already.
-    for (std::vector<GraphEdge>::iterator e = path->begin()+1;
+    for (std::vector<GraphEdge>::iterator e = path->begin();
          e != path->end();
          e++) {
       RectangularGraphNode *r = (RectangularGraphNode*)((*e).to);
@@ -69,7 +69,8 @@ std::string RectangularGraph::asText(
 
 
 void RectangularGraphNode::dump() {
-  std::cout << "[RectNode ID(" << std::setw(6) << std::setfill('0') << _id << ") (" 
+  std::cout << "[RectNode ID(" 
+            << std::setw(6) << std::setfill('0') << _id << ") (" 
             << x << "," << y << ") ";
   RectangularGraphNode *to;
   if (north().to != NULL) {

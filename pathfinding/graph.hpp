@@ -1,6 +1,8 @@
 #ifndef __graph_hpp__
 #define __graph_hpp__
 
+#include "types.hpp"
+
 #include <stdint.h>
 
 #include <vector>
@@ -8,12 +10,6 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
-
-#ifndef EdgeCost
-#define EdgeCost uint32_t
-#define EDGE_MAX 0xFFFFFFFF
-#define EDGE_FAR 0xFFFFFFFE
-#endif
 
 #ifdef _DEBUG
 #define DEBUG(m) std::cout << m;

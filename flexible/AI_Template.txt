@@ -1,0 +1,226 @@
+// abstraction of all game objects (to allow any type of object as a parameter)
+public GameObject {
+protected:
+   void* _obj;
+
+public:
+   // detect type, return _obj cast as type
+   bool is_TYPE1();
+   TYPE1 asTYPE1();
+   bool is_TYPE2();
+   TYPE2 asTYPE2();
+   ...
+   bool is_TYPEn();
+   TYPEn asTYPEn();
+}
+
+public class GameMap {
+protected:
+   int _width, _height;
+   // flat array (rectangular addressing is simulated:
+   //   at(i,j) = _objects[j*_width+i];
+   vector<GameObject*> _objects; 
+
+public:
+   GameMap( AI* ); // create a new one every turn
+   GameObject& at( int x, int y ); // return object at position   
+}
+
+public class AI {
+   ... // standard AI stuff (by dev team)
+   RequisitionOfficer *personnel; // All requests go through him.
+
+   GameMap *gamemap; // useful representation of game data
+
+   void turn() {
+     update_gamemap();
+
+     commander->_updateState(ai);
+     commander->_processCasualties();
+     commander->_execute();
+     commander->_
+   }
+}
+
+public class UnitRequirements {
+public:
+   int minLevel;
+};
+
+public class Officer {
+protected:
+   vector<unit_type> _units;
+   AI* ai;
+   vector<Officer*> _subordinates;
+
+public:
+   int unitsNeeded;
+   UnitRequirements unitsNeededRequirements;
+   
+   // The order in which subs are added determines their priority
+   //   (earlier is higher priority).
+   sub addSubordinate( Officer* o ) {
+       _subordinates.push_back(o);
+   }
+
+   //////////////////////////////
+   // Update Game State information
+   // This gets called every turn. Updating will probably do little
+   //   more than set the AI* pointer in the Officer object.
+   void _updateState( AI* ai, ... ) {
+     this->ai = ai;
+     this->updateState();
+     foreach sub:
+         sub->_updateState(ai,...);
+   }
+   virtual void updateState() {
+      // Do nothing by default. This is meant to be overridden by subclasses.
+   }
+
+   //////////////////////////////
+   // Updating Personnel
+   //   Removing dead/gone units is done automatically by base class
+   //     (_processCasualties()).
+   //   Subclasses should implement processCasualties()
+   void _processCasualties() {
+       foreach sub:
+           sub->_processCasualties();
+
+       this->processCasualties(); // allow officer to clean up any unit-state data
+       foreach _unit:
+           <delete unit from _units vector>
+   }
+   virtual void processCasualties() {
+      // Do nothing by default. This is meant to be overridden by subclasses.
+   }
+
+   //////////////////////////////
+   // Take Turn (Do Game Actions: decide on strategy, give orders to units, ...)
+   void _Execute() {
+       this->Execute();
+       foreach sub:
+           sub->_Execute();
+   }
+   virtual void Execute {
+      // Do nothing by default. This is meant to be overridden by subclasses.
+   }
+
+
+   final void requisitionUnits() {
+     while (ai->personnel->canRequisition(no_requirements)):
+       this->issueRequisition(before);
+       foreach _subordinate:
+         _subordinate->requisitionUnits();
+       this->issueRequisition(after);
+   }
+
+   //////////////////////////////
+   // Have the officer decide if/how to requisition more units.
+   // return 
+   void _issueRequisition() {
+   }
+   void issueRequisition( bool before_subordinates ) {
+     // base class: issue a requisition with semi-random (sensible) requirements.
+     UnitRequirements require = this->unitsNeededRequirements;
+     bool available = this->ai->personnel->canRequisition(...);
+     // reserve it if it's not available
+     this->ai->personnel->requisition(...,available);
+   }
+}
+
+public class RequisitionOfficer : public Officer {
+   // report as to whether or not there are available requisitions
+   //   (meeting any specified parameters)
+   bool canRequisition( ... ); // allow specs (base, level, ...)
+   // Attempt to requisition unit(s) (meeting any specified parameters)
+   //   Returns false if the requisition fails (or if it is not possible
+   //   to requisition the specified unit(s)).
+   // allow specs (base, level, ...), allow "reserving" resources
+   bool requisition( ..., bool reserve ); 
+}
+
+
+// attacks closest enemy units
+public class Lieutenant_PlayerKiller : public Officer {
+ protected:
+  public class _orders {
+    int target_unit;
+  };
+  map<int,_orders> _unitOrders;
+
+ public:
+  void issueRequisition( bool before_subordinates ) {
+    // find the closest untargeted unit to a spawner
+    // spawn a killer there
+    
+    
+  BASE_LOOP:
+    foreach _base in ai->gameboard->enemybases():
+      foreach _unit in _units:
+        if (_unitOrders[_unit].attacking_base == _base) continue BASE_LOOP;
+      nearest_base = find_nearest_spawner(_base.location);
+      ai->personnel->requisition(_unitsNeededRequirements.minimum_level,nearest_base.location,reserve_resources);
+      if (!ai->personnel->canRequisition()) break;
+  }
+
+  void Execute() {
+    foreach _unit in _units:
+      _orders orders = _unitOrders[_unit.id];
+      int range = distance(orders.attackingBase,
+                         _unit.location);
+      if (range < orders.distance_to_start_attack):
+        _unit.shoot_(orders.attackingBase);
+      else:
+        vector<GraphEdge>* path =
+          path_astar(_unit.location,orders.attackingBase.location);
+        _unit.move(path_astar[0]);
+  }
+
+  void processCasualties() {
+    foreach _unit in _units:
+      if _unit is dead, remove it from _unitOrders
+  }
+  
+};
+
+
+public class Colonel_BigGun : public Officer {
+ protected:
+  public class _orders {
+    int attacking_base;
+    int distance_to_start_attack;
+  };
+  map<int,_orders> _unitOrders;
+
+ public:
+  void issueRequisition( bool before_subordinates ) {
+  BASE_LOOP:
+    foreach _base in ai->gameboard->enemybases():
+      foreach _unit in _units:
+        if (_unitOrders[_unit].attacking_base == _base) continue BASE_LOOP;
+      nearest_base = find_nearest_spawner(_base.location);
+      ai->personnel->requisition(_unitsNeededRequirements.minimum_level,nearest_base.location,reserve_resources);
+      if (!ai->personnel->canRequisition()) break;
+  }
+
+  void Execute() {
+    foreach _unit in _units:
+      _orders orders = _unitOrders[_unit.id];
+      int range = distance(orders.attackingBase,
+                         _unit.location);
+      if (range < orders.distance_to_start_attack):
+        _unit.shoot_(orders.attackingBase);
+      else:
+        vector<GraphEdge>* path =
+          path_astar(_unit.location,orders.attackingBase.location);
+        _unit.move(path_astar[0]);
+  }
+
+  void processCasualties() {
+    foreach _unit in _units:
+      if _unit is dead, remove it from _unitOrders
+  }
+  
+};
+
+
